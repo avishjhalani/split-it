@@ -8,6 +8,6 @@ const ContactsPage = () => {
 
     </div>
   )
-}
+};
 
 export default ContactsPage
