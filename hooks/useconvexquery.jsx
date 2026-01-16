@@ -1,68 +1,62 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { mutation, useQuery } from "convex/react";
-import { err } from "inngest/types";
+import { useQuery, useMutation } from "convex/react";
 
-export const useConvexQuery = (query,...args)=>{
-    const result = useQuery(query,...args);
+export const useConvexQuery = (query, ...args) => {
+    const result = useQuery(query, ...args);
 
     const [data, setData] = useState(undefined);
-    const [isLoading ,setIsLoading] = useState(true);
-    const [error ,setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-
-
-    useEffect(()=>{
-        if(result === undefined){
+    useEffect(() => {
+        if (result === undefined) {
             setIsLoading(true);
-        }
-        else{
-            try{
-               setData(result);
-                setError(null); 
-            }
-            catch(err){
+        } else {
+            try {
+                setData(result);
+                setError(null);
+            } catch (err) {
                 setError(err);
                 toast.error(err.message);
-            }finally{
+            } finally {
                 setIsLoading(false);
             }
         }
-    },[result]);
+    }, [result]);
 
-    return{
+    return {
         data,
         isLoading,
         error,
     };
 };
 
-
-
-export const useConvexMutation = (mutation)=>{
-    const mutationFn = useMutation(query,);
+export const useConvexMutation = (mutation) => {
+    const mutationFn = useMutation(mutation);
 
     const [data, setData] = useState(undefined);
-    const [isLoading ,setIsLoading] = useState(true);
-    const [error ,setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const mutate = async(...args)=>{
+    const mutate = async (...args) => {
         setIsLoading(true);
         setError(null);
 
-        try{
+        try {
             const response = await mutationFn(...args);
             setData(response);
             return response;
-        }
-        catch(err){
+        } catch (err) {
             setError(err);
             toast.error(err.message);
-        }
-        finally{
+            throw err;
+        } finally {
             setIsLoading(false);
         }
     };
 
-    return {mutate,data,isLoading,error};
+    return { mutate, data, isLoading, error };
 };
